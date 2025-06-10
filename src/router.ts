@@ -16,8 +16,10 @@ class Router extends ReactiveController {
 		super();
 		installRouter(async (location) => {
 			this.navigateComplete = new Promise(async (resolve) => {
-				const hash = location.hash.slice(1);
-				const params = new URLSearchParams(hash);
+				await store.updateComplete;
+				// const query = location.hash.slice(1);
+				const query = location.search.slice(1);
+				const params = new URLSearchParams(query);
 				const search = params.get('search');
 				if (search) {
 					store._search = search;

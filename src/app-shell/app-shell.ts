@@ -13,6 +13,7 @@ import {
 } from '../assets/assets.js';
 import {copyToClipboard} from '../utils.js';
 import {playJapanese} from '@vdegenne/speech';
+import {ifDefined} from 'lit/directives/if-defined.js';
 
 declare global {
 	interface Window {
@@ -28,44 +29,66 @@ declare global {
 @withController(store)
 export class AppShell extends LitElement {
 	render() {
+		const disabled = store.search === null;
 		return html`<!-- -->
 			<header></header>
-			<div class="flex flex-1 justify-center items-center text-9xl jp">
-				${store._search}
+			<div class="flex flex-1 justify-center items-center">
+				${store._search
+					? html`<span class="text-9xl jp">${store._search}</span>`
+					: html`<p class="text-2xl">
+							Add
+							<span
+								class="px-2 py-1"
+								style="background-color:var(--md-sys-color-surface-container-highest);"
+								>${'?search=...'}</span
+							>
+							if you want to search something.
+						</p>`}
 			</div>
 			<footer class="flex justify-center items-center gap-3 m-5">
 				<md-icon-button
 					@click=${() => {
 						playJapanese(store.search);
 					}}
+					?disabled=${disabled}
 				>
 					<md-icon>volume_up</md-icon>
 				</md-icon-button>
 				<md-icon-button
-					href="${jishoUrl(store.search)}"
+					href="${ifDefined(store.search && jishoUrl(store.search))}"
 					target="_blank"
 					style="--md-icon-button-icon-size:20px"
+					?disabled=${disabled}
 				>
 					<md-icon><img src=${ICO_JISHO} /></md-icon>
 				</md-icon-button>
-				<md-icon-button href="${googleImagesUrl(store.search)}" target="_blank">
+				<md-icon-button
+					href="${ifDefined(store.search && googleImagesUrl(store.search))}"
+					target="_blank"
+					?disabled=${disabled}
+				>
 					<md-icon>${SVG_GOOGLE_IMAGES}</md-icon>
 				</md-icon-button>
 				<md-icon-button
-					href="${weblioUrl(store.search)}"
+					href="${ifDefined(store.search && weblioUrl(store.search))}"
 					target="_blank"
 					style="--md-icon-button-icon-size:20px"
+					?disabled=${disabled}
 				>
 					<md-icon><img src="${ICO_WEBLIO}" /></md-icon>
 				</md-icon-button>
 				<md-icon-button
-					href="${mdbgUrl(store.search)}"
+					href="${ifDefined(store.search && mdbgUrl(store.search))}"
 					target="_blank"
 					style="--md-icon-button-icon-size:20px"
+					?disabled=${disabled}
 				>
 					<md-icon><img src="${ICO_MDBG}" /></md-icon>
 				</md-icon-button>
-				<md-icon-button @click=${() => copyToClipboard(store.search)}>
+				<md-icon-button
+					@click=${() => copyToClipboard(store.search)}
+					?disabled=${disabled}
+				>
 					<md-icon>content_copy</md-icon>
 				</md-icon-button>
 			</footer>
